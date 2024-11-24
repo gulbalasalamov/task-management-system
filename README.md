@@ -97,3 +97,55 @@
                +---------------+                +----------------+
 ```
 
+## Database Design
+
+```plaintext
+
+┌──────────────────┐                 ┌──────────────────────┐                 ┌──────────────────┐
+│      Roles       │                 │        Users         │                 │      Tasks       │
+├──────────────────┤      1:N        ├──────────────────────┤                 ├──────────────────┤
+│ role_id (PK)     ├─────────────────┤ user_id (PK)         │       1:N       │ task_id (PK)     │
+│ role_name        │                 │ username             ├─────────────────┤ title            │
+└──────────────────┘                 │ email                │       1:N       │ description      │
+                                     │ password             ├─────────────────┤ status           │
+                                     │ role_id (FK)         │                 │ priority         │
+                                     │ created_at           │                 │ author_id (FK)   │
+                                     │ updated_at           │                 │ assignee_id (FK) │
+                                     └───────┬──────────────┘                 │ created_at       │
+                                             │                                │ updated_at       │
+                                             │                                └────────┬─────────┘
+                                             │                                         │
+                                             │                                         │
+                                             │                                         │
+                                             │                                         │
+                                             │                                         │
+┌──────────────────┐                         │                                         │
+│     Comments     │                         │                                         │
+├──────────────────┤           1:N           │                                         │
+│ comment_id (PK)  │                         │                                         │
+│ content          ├─────────────────────────┘                                         │
+│ task_id (FK)     │←──────────────────────────────────────────────────────────────────┘
+│ user_id (FK)     │                                                    1:N
+│ created_at       │
+│ updated_at       │
+└──────────────────┘
+```
+### Relationships:
+
+- **Users and Roles:**
+
+   - Each user can have one role (role_id).
+   - Each role can be assigned to many users.
+
+
+- **Users and Tasks:** 
+  - author_id: Only admin users can create tasks. (1:N)
+  - assignee_id: Each user can be assigned to many tasks. (1:N)
+
+
+- **Tasks and Comments:**
+  - task_id: Each task can have many comments. (1:N)
+
+
+- **Users and Comments:**
+  - user_id: Each user can leave many comments. (1:N)
