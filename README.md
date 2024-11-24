@@ -46,9 +46,54 @@
     - Development environment should be created using docker-compose.
     - Basic unit tests should be written for core functionalities.
 
-## Technologies to be Used
+## Technologies
 - **Java 17+**
-- **Spring, Spring Boot**
-- **PostgreSQL or MySQL**
-- **Spring Security**
-- **Additional tools (if needed): For example, cache**
+- **Spring Boot**
+- **PostgreSQL**
+- **Spring Security - JWT **
+- **Docker**
+
+## Use-Case Diagram
+
+```plaintext
+                            +--------------------+                    
+                            |       Admin        |
+                            +--------------------+
+                                     |
+                                     |
+                    +----------------+----------------+----------------+
+                    |                |                |                |
+                    |                |                |                |                   
+             +------------+    +-------------+  +-----------+  +-------------+                           
+             | View Tasks |    | Create Task |  | Edit Task |  | Delete Task |
+             +------------+    +-------------+  +-----------+  +-------------+
+                    |
+                    |
+       +--------------------+------------------+---------------+
+       |                    |                  |               |
+       |                    |                  |               | 
++---------------+  +---------------+  +---------------+ +---------------+
+| Change Status |  |Change Priority|  | Assign Task   | | Leave Comment |
++---------------+  +---------------+  +---------------+ +---------------+
+
+```
+```plaintext
+
+                             +---------------------+
+                             |       User          |
+                             +---------------------+
+                                       |         
+                                       |   
+                             +---------------------+  
+                             | View Assigned Tasks |  
+                             +---------------------+  
+                                       |
+                                       |
+                       +-----------------------------------+
+                       |                                   |
+                       |                                   |
+               +---------------+                +----------------+
+               | Change Status |                | Leave Comments |
+               +---------------+                +----------------+
+```
+
