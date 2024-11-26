@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -45,8 +46,13 @@ public class User {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "role_id",referencedColumnName = "id")
+//    @ToString.Exclude
+//    private Role role;
+
+    @ManyToOne
     @JoinColumn(name = "role_id",referencedColumnName = "id")
     private Role role;
 
@@ -57,4 +63,19 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", role=" + role +
+                ", comments=" + comments +
+                ", tasks=" + tasks +
+                '}';
+    }
 }
