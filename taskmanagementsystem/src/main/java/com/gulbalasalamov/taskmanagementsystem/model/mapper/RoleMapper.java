@@ -2,7 +2,7 @@ package com.gulbalasalamov.taskmanagementsystem.model.mapper;
 
 import com.gulbalasalamov.taskmanagementsystem.model.dto.RoleDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Role;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleName;
+import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
 
 public class RoleMapper {
 
@@ -13,7 +13,7 @@ public class RoleMapper {
 
         RoleDTO roleDTO = new RoleDTO();
         roleDTO.setId(role.getId());
-        roleDTO.setRoleName(role.getRoleName().name());
+        roleDTO.setRoleType(role.getRoleType().name());
         return roleDTO;
     }
 
@@ -24,7 +24,7 @@ public class RoleMapper {
 
         Role role = new Role();
         role.setId(roleDTO.getId());
-        role.setRoleName(RoleName.valueOf(roleDTO.getRoleName()));
+        role.setRoleType(RoleType.valueOf(roleDTO.getRoleType()));
         return role;
     }
 }

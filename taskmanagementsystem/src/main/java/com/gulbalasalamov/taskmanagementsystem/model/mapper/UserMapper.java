@@ -1,16 +1,12 @@
 package com.gulbalasalamov.taskmanagementsystem.model.mapper;
 
-import com.gulbalasalamov.taskmanagementsystem.model.dto.CommentDTO;
-import com.gulbalasalamov.taskmanagementsystem.model.dto.TaskDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.dto.UserDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Comment;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Role;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Task;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleName;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {

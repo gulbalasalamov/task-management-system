@@ -1,5 +1,6 @@
 package com.gulbalasalamov.taskmanagementsystem.model.enums;
 
-public enum RoleName {
-    ADMIN,USER
+
+public enum RoleType {
+    ADMIN,USER;
 }
