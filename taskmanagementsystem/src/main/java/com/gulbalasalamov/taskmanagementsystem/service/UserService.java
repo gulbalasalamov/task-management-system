@@ -6,8 +6,8 @@ import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
 import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
 import com.gulbalasalamov.taskmanagementsystem.repository.RoleRepository;
 import com.gulbalasalamov.taskmanagementsystem.repository.UserRepository;
-import com.gulbalasalamov.taskmanagementsystem.request.AuthRequest;
-import com.gulbalasalamov.taskmanagementsystem.request.UserRequest;
+import com.gulbalasalamov.taskmanagementsystem.request.SignInAuthRequest;
+import com.gulbalasalamov.taskmanagementsystem.request.SIgnUpUserRequest;
 import com.gulbalasalamov.taskmanagementsystem.response.AuthResponse;
 import com.gulbalasalamov.taskmanagementsystem.response.UserResponse;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenProvider;
@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -36,11 +38,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public AuthResponse signIn(AuthRequest authRequest) {
+    public AuthResponse signIn(SignInAuthRequest signInAuthRequest) {
 
         try {
-            String email = authRequest.getEmail();
-            String password = authRequest.getPassword();
+            String email = signInAuthRequest.getEmail();
+            String password = signInAuthRequest.getPassword();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new CustomJwtException("User not found", HttpStatus.BAD_REQUEST));
@@ -51,18 +53,18 @@ public class UserService {
         }
     }
 
-    public UserResponse signUp(UserRequest userRequest) {
+    public UserResponse signUp(SIgnUpUserRequest SIgnUpUserRequest) {
 
         User user = new User();
-        user.setUsername(userRequest.getUsername());
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
+        user.setUsername(SIgnUpUserRequest.getUsername());
+        user.setEmail(SIgnUpUserRequest.getEmail());
+        user.setPassword(SIgnUpUserRequest.getPassword());
 
 
 
-        if (!userRepository.existsByUsername(userRequest.getUsername())) {
-            user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-            Role role = roleRepository.findByRoleType(RoleType.valueOf(userRequest.getRoleType().toUpperCase()))
+        if (!userRepository.existsByUsername(SIgnUpUserRequest.getUsername())) {
+            user.setPassword(passwordEncoder.encode(SIgnUpUserRequest.getPassword()));
+            Role role = roleRepository.findByRoleType(RoleType.valueOf(SIgnUpUserRequest.getRoleType().toUpperCase()))
                     .orElseThrow(() -> new RuntimeException("Role not found"));
             user.setRole(role);
         } else {
@@ -82,4 +84,5 @@ public class UserService {
 
         return userResponse;
     }
+
 }

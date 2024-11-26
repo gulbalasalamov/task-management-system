@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +24,13 @@ public class Role implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 
-    @OneToOne(mappedBy = "role")
-    @ToString.Exclude
-    private User user;
+//    @OneToOne(mappedBy = "role")
+//    @ToString.Exclude
+//    private User user;
+
+    @OneToMany(mappedBy = "role",cascade = CascadeType.ALL)
+    private List<User> users;
+
 
     @Override
     public String getAuthority() {
@@ -36,7 +42,7 @@ public class Role implements GrantedAuthority {
         return "Role{" +
                 "id=" + id +
                 ", roleType=" + roleType +
-                ", user=" + user +
+                ", users=" + users +
                 '}';
     }
 }

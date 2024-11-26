@@ -16,8 +16,8 @@ import java.util.Date;
 @Table(name = "comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "comment_seq")
-    @SequenceGenerator(name = "comment_seq",sequenceName = "comment_seq",allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_seq")
+    @SequenceGenerator(name = "comment_seq", sequenceName = "comment_seq", allocationSize = 1)
     private Long id;
     private String content;
     @CreationTimestamp
@@ -26,10 +26,10 @@ public class Comment {
     private Date updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
-        private User user;
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "task_id",referencedColumnName = "id")
+    @JoinColumn(name = "task_id", referencedColumnName = "id")
     private Task task;
 }

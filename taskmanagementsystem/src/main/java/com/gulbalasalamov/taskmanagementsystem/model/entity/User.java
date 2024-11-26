@@ -46,10 +46,14 @@ public class User {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "role_id",referencedColumnName = "id")
+//    @ToString.Exclude
+//    private Role role;
+
+    @ManyToOne
     @JoinColumn(name = "role_id",referencedColumnName = "id")
-    @ToString.Exclude
     private Role role;
 
     @JsonIgnore
