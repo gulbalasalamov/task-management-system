@@ -2,8 +2,7 @@ package com.gulbalasalamov.taskmanagementsystem.security;
 
 import com.gulbalasalamov.taskmanagementsystem.exception.CustomJwtException;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Role;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
-import com.gulbalasalamov.taskmanagementsystem.service.MyUserDetails;
+import com.gulbalasalamov.taskmanagementsystem.service.MyUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -24,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 @Component
 public class JwtTokenProvider {
     @Value("${security.jwt.token.secret-key:default-key}")
@@ -34,19 +34,19 @@ public class JwtTokenProvider {
     private long validityInMilliseconds = 1000 * 60 * 60 * 24; // 1 day
 
     @Autowired
-    private MyUserDetails myUserDetails;
+    private MyUserDetailsService myUserDetailsService;
 
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String username, RoleType roleType) {
+    public String createToken(String username, List<Role> roles) {
 
         Claims claims = Jwts.claims().setSubject(username);
-        claims.put("role",List.of(new SimpleGrantedAuthority(roleType.name())));
-//        claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority()))
-//                .filter(Objects::nonNull).collect(Collectors.toList()));
+        //claims.put("role",List.of(new SimpleGrantedAuthority(roleType.name())));
+        claims.put("auth", roles.stream().map(s -> new SimpleGrantedAuthority(s.getAuthority()))
+                .filter(Objects::nonNull).collect(Collectors.toList()));
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -60,9 +60,14 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = myUserDetails.loadUserByUsername(getUsername(token));
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+
+//    public Authentication getAuthenticationByEmail(String token) {
+//        UserDetails userDetails = myUserDetailsService.loadUserByEmail(getUsername(token));
+//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+//    }
 
     public String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();

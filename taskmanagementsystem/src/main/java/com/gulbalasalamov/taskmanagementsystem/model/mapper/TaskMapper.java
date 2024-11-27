@@ -49,9 +49,17 @@ public class TaskMapper {
         task.setId(taskDTO.getId());
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
-        task.setStatus(Status.valueOf(taskDTO.getStatus()));
         task.setCreatedAt(taskDTO.getCreatedAt());
         task.setUpdatedAt(taskDTO.getUpdatedAt());
+
+        if (taskDTO.getStatus() != null) {
+            try {
+                task.setStatus(Status.valueOf(taskDTO.getStatus()));
+            } catch (IllegalArgumentException e) {
+                // TODO: For the wrong ENUM handle appropiately
+                throw new RuntimeException("Invalid status value: " + taskDTO.getStatus());
+            }
+        }
 
         if (taskDTO.getPriority() != null) {
             task.setPriority(Priority.valueOf(taskDTO.getPriority()));

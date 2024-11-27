@@ -52,9 +52,13 @@ public class User {
 //    @ToString.Exclude
 //    private Role role;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id",referencedColumnName = "id")
-    private Role role;
+//    @ManyToOne
+//    @JoinColumn(name = "role_id",referencedColumnName = "id")
+//    private Role role;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Role> roles = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -73,7 +77,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", role=" + role +
+                ", roles=" + roles +
                 ", comments=" + comments +
                 ", tasks=" + tasks +
                 '}';

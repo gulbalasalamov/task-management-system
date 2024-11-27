@@ -1,15 +1,19 @@
 package com.gulbalasalamov.taskmanagementsystem.service;
 
 import com.gulbalasalamov.taskmanagementsystem.exception.CustomJwtException;
+import com.gulbalasalamov.taskmanagementsystem.exception.InvalidRoleTypeException;
+import com.gulbalasalamov.taskmanagementsystem.exception.RoleNotFoundException;
+import com.gulbalasalamov.taskmanagementsystem.exception.UserAlreadyExistsException;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Role;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
 import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
+import com.gulbalasalamov.taskmanagementsystem.model.mapper.UserMapper;
 import com.gulbalasalamov.taskmanagementsystem.repository.RoleRepository;
 import com.gulbalasalamov.taskmanagementsystem.repository.UserRepository;
 import com.gulbalasalamov.taskmanagementsystem.request.SignInAuthRequest;
-import com.gulbalasalamov.taskmanagementsystem.request.SIgnUpUserRequest;
-import com.gulbalasalamov.taskmanagementsystem.response.AuthResponse;
-import com.gulbalasalamov.taskmanagementsystem.response.UserResponse;
+import com.gulbalasalamov.taskmanagementsystem.request.SignUpUserRequest;
+import com.gulbalasalamov.taskmanagementsystem.response.SignInAuthResponse;
+import com.gulbalasalamov.taskmanagementsystem.response.SignUpUserResponse;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -38,51 +41,56 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public AuthResponse signIn(SignInAuthRequest signInAuthRequest) {
+    public SignInAuthResponse signIn(SignInAuthRequest signInAuthRequest) {
 
         try {
             String email = signInAuthRequest.getEmail();
             String password = signInAuthRequest.getPassword();
+
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new CustomJwtException("User not found", HttpStatus.BAD_REQUEST));
-            String token = jwtTokenProvider.createToken(email, user.getRole().getRoleType());
-            return new AuthResponse(email, token);
+            String token = jwtTokenProvider.createToken(email, user.getRoles());
+            return new SignInAuthResponse(email, token);
         } catch (AuthenticationException e) {
             throw new CustomJwtException("Invalid email/password supplied", HttpStatus.BAD_REQUEST);
         }
     }
 
-    public UserResponse signUp(SIgnUpUserRequest SIgnUpUserRequest) {
+    public SignUpUserResponse signUp(SignUpUserRequest signUpUserRequest) {
+        User user = UserMapper.toUser(signUpUserRequest);
 
-        User user = new User();
-        user.setUsername(SIgnUpUserRequest.getUsername());
-        user.setEmail(SIgnUpUserRequest.getEmail());
-        user.setPassword(SIgnUpUserRequest.getPassword());
-
-
-
-        if (!userRepository.existsByUsername(SIgnUpUserRequest.getUsername())) {
-            user.setPassword(passwordEncoder.encode(SIgnUpUserRequest.getPassword()));
-            Role role = roleRepository.findByRoleType(RoleType.valueOf(SIgnUpUserRequest.getRoleType().toUpperCase()))
-                    .orElseThrow(() -> new RuntimeException("Role not found"));
-            user.setRole(role);
-        } else {
-            throw new CustomJwtException("User already exists", HttpStatus.CONFLICT);
+        if (userRepository.existsByUsername(signUpUserRequest.getUsername())) {
+            throw new UserAlreadyExistsException("Username already exists");
+        }
+        if (userRepository.existsByEmail(signUpUserRequest.getEmail())) {
+            throw new UserAlreadyExistsException("Email already exists");
         }
 
+        user.setPassword(passwordEncoder.encode(signUpUserRequest.getPassword()));
+
+        Role role;
+        try {
+            role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase())).orElseThrow(() -> new RoleNotFoundException("Role not found"));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRoleTypeException("Invalid role type: " + signUpUserRequest.getRoleType());
+        }
+
+//        Role role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase()))
+//                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+        user.setRoles(Collections.singletonList(role));
+
+//        if (!userRepository.existsByUsername(user.getUsername())) {
+//            user.setPassword(passwordEncoder.encode(user.getPassword()));
+//            Role role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase()))
+//                    .orElseThrow(() -> new RuntimeException("Role not found"));
+//            user.setRoles(Collections.singletonList(role));
+//        } else {
+//            throw new CustomJwtException("User already exists", HttpStatus.CONFLICT);
+//        }
 
         User savedUser = userRepository.save(user);
-
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(savedUser.getId());
-        userResponse.setUsername(savedUser.getUsername());
-        userResponse.setEmail(savedUser.getEmail());
-        userResponse.setRoleType(savedUser.getRole().getRoleType().name());
-        userResponse.setCreatedAt(savedUser.getCreatedAt());
-        userResponse.setUpdatedAt(savedUser.getUpdatedAt());
-
-        return userResponse;
+        return UserMapper.toUserResponse(savedUser);
     }
-
 }
