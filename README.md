@@ -1,4 +1,4 @@
-# Task Management System Development
+# Task Management System - Effective Mobile Jr. Java Developer Backend Challenge
 
 ## Functional Requirements
 
@@ -46,12 +46,6 @@
     - Development environment should be created using docker-compose.
     - Basic unit tests should be written for core functionalities.
 
-## Technologies
-- **Java 17+**
-- **Spring Boot**
-- **PostgreSQL**
-- **Spring Security - JWT **
-- **Docker**
 
 ## Use-Case Diagram
 
@@ -149,3 +143,42 @@
 
 - **Users and Comments:**
   - user_id: Each user can leave many comments. (1:N)
+
+
+## Test Coverage
+
+**Class**   : %84
+
+**Methods** : %74
+
+![test-coverage](https://github.com/user-attachments/assets/dfb632f1-5cd1-46fc-86c8-4634981bc7b9)
+
+
+## API Documentation
+
+To access Swagger doc, click live link below.
+
+Swagger / OpenAPI : http://localhost:8080/swagger-ui/swagger-ui/index.html
+
+
+![image](https://github.com/user-attachments/assets/04ec4e84-9afa-4c7a-a5d0-762c82590f15)
+
+![image](https://github.com/user-attachments/assets/2edff95c-d060-4e97-8511-ac8963398f4f)
+
+**Postman Collection** To run the collection in your postman:
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/5231798-3e05d92a-0637-4dd2-8d54-9e5ad335aab0?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D5231798-3e05d92a-0637-4dd2-8d54-9e5ad335aab0%26entityType%3Dcollection%26workspaceId%3D314f7299-ad9d-425b-a0ea-09e317913a0f)
+
+
+
+
+
+
+
+ 
+## Technologies
+- **Java 17+**
+- **Spring Boot**
+- **PostgreSQL**
+- **Spring Security - JWT **
+- **Docker**
