@@ -2,18 +2,15 @@ package com.gulbalasalamov.taskmanagementsystem.service;
 
 import com.gulbalasalamov.taskmanagementsystem.exception.TaskNotFoundException;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
 import com.gulbalasalamov.taskmanagementsystem.model.mapper.TaskMapper;
 import com.gulbalasalamov.taskmanagementsystem.repository.UserRepository;
 import com.gulbalasalamov.taskmanagementsystem.repository.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.gulbalasalamov.taskmanagementsystem.model.dto.TaskDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Task;

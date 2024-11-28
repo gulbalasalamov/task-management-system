@@ -40,9 +40,15 @@ public class WebSecurityConfig {
         http.authorizeRequests(auth -> auth
                 .requestMatchers("/api/v1/user/**").permitAll()
                 .requestMatchers("/api/v1/task/update/**").hasAnyRole("ADMIN","USER")
+                .requestMatchers("/api/v1/comment/**").hasAnyRole("ADMIN","USER")
                 .requestMatchers("/api/v1/task/all").hasRole("ADMIN")
                 .requestMatchers("/api/v1/task/assign/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/task/filter/**").hasRole("ADMIN")
+//                .requestMatchers("/api/v1/comment/create").hasAnyRole("ADMIN","USER")
+//                .requestMatchers("/api/v1/comment/update").hasAnyRole("ADMIN","USER")
+//                .requestMatchers("/api/v1/comment/delete").hasAnyRole("ADMIN","USER")
+//                .requestMatchers("/api/v1/comment/task/**").hasAnyRole("ADMIN","USER")
+//                .requestMatchers("/api/v1/comment/user/**").hasAnyRole("ADMIN","USER")
                 .requestMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
                         "/configuration/security", "/swagger-ui.html", "/webjars/**",
                         "/swagger-ui/**", "/javainuse-openapi/**").permitAll()

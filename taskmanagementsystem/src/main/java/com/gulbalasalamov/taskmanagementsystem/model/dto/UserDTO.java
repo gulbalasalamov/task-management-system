@@ -19,5 +19,4 @@ public class UserDTO {
     private List<Long> commentIds;
     private List<Long> taskIds;
     private List<Long> roleIds;
-    //private Long roleId;
 }
