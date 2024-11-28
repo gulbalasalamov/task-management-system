@@ -4,6 +4,7 @@ import com.gulbalasalamov.taskmanagementsystem.exception.CustomJwtException;
 import com.gulbalasalamov.taskmanagementsystem.exception.InvalidRoleTypeException;
 import com.gulbalasalamov.taskmanagementsystem.exception.RoleNotFoundException;
 import com.gulbalasalamov.taskmanagementsystem.exception.UserAlreadyExistsException;
+import com.gulbalasalamov.taskmanagementsystem.model.dto.UserDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Role;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
 import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
@@ -26,6 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +39,9 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<UserDTO> getAll() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserMapper::toUserDTO).collect(Collectors.toList());
     }
 
     public SignInAuthResponse signIn(SignInAuthRequest signInAuthRequest) {

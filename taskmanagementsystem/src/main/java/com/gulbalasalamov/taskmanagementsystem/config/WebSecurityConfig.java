@@ -39,7 +39,10 @@ public class WebSecurityConfig {
         //Entry points
         http.authorizeRequests(auth -> auth
                 .requestMatchers("/api/v1/user/**").permitAll()
-                .requestMatchers("/api/v1/task/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/task/update/**").hasAnyRole("ADMIN","USER")
+                .requestMatchers("/api/v1/task/all").hasRole("ADMIN")
+                .requestMatchers("/api/v1/task/assign/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/task/filter/**").hasRole("ADMIN")
                 .requestMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
                         "/configuration/security", "/swagger-ui.html", "/webjars/**",
                         "/swagger-ui/**", "/javainuse-openapi/**").permitAll()

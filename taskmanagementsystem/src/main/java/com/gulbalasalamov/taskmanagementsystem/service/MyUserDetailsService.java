@@ -39,20 +39,4 @@ public class MyUserDetailsService implements UserDetailsService {
                 .disabled(false)
                 .build();
     }
-
-//    public UserDetails loadUserByEmail(String email) throws EmailNotFoundException {
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(()-> new EmailNotFoundException("User with email: " + email + " not found"));
-//
-//        return org.springframework.security.core.userdetails.User
-//                .withUsername(email)
-//                .password(user.getPassword())
-//                .authorities(user.getRoles())
-//                .accountLocked(false)
-//                .accountExpired(false)
-//                .accountLocked(false)
-//                .credentialsExpired(false)
-//                .disabled(false)
-//                .build();
-//    }
 }

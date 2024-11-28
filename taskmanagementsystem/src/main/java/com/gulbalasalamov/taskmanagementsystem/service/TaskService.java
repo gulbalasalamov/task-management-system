@@ -2,7 +2,9 @@ package com.gulbalasalamov.taskmanagementsystem.service;
 
 import com.gulbalasalamov.taskmanagementsystem.exception.TaskNotFoundException;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
+import com.gulbalasalamov.taskmanagementsystem.model.enums.RoleType;
 import com.gulbalasalamov.taskmanagementsystem.model.mapper.TaskMapper;
+import com.gulbalasalamov.taskmanagementsystem.repository.UserRepository;
 import com.gulbalasalamov.taskmanagementsystem.repository.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import com.gulbalasalamov.taskmanagementsystem.model.dto.TaskDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Task;
@@ -27,6 +31,7 @@ import java.util.stream.Collectors;
 public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     public Page<TaskDTO> getFilteredTasks(String title,
                                           TaskStatus status,
@@ -71,15 +76,49 @@ public class TaskService {
         return TaskMapper.toTaskDTO(task);
     }
 
-    public TaskDTO updateTask(Long id, TaskDTO taskDTO) {
+    /**
+     * Task update process: Authorizations are determined according to the user role.
+     * Users with role type - admin can update all fields.
+     * Users with role type - user can only update the status of tasks assigned to them.
+     * @param id            The id of the task to be updated
+     * @param taskDTO       Data to be updated
+     * @param userDetails   The user logged in
+     * @return              Updated TaskDTO
+     */
+    public TaskDTO updateTask(Long id, TaskDTO taskDTO, UserDetails userDetails) {
         logger.info("Updating task with ID: {}", id);
         Task existingTask = taskRepository.findById(id).orElseThrow(() -> {
             logger.error("Task with ID: {} not found", id);
             return new RuntimeException("Task not found");
         });
-        applyPartialUpdates(existingTask, taskDTO);
+
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        boolean isUser = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"));
+
+        //Role Based Access Control (RBAC)
+        if (isAdmin) {
+            applyPartialUpdates(existingTask, taskDTO);
+        } else if (isUser) {
+            if (existingTask.getAssignee() != null &&
+                    existingTask.getAssignee().getEmail().equals(userDetails.getUsername())) {
+                if (taskDTO.getStatus() != null) {
+                    existingTask.setTaskStatus(TaskStatus.valueOf(taskDTO.getStatus()));
+                } else {
+                    throw new RuntimeException("Users can only update the status of their assigned tasks");
+                }
+            } else {
+                throw new RuntimeException("You are not allowed to update this task");
+            }
+        } else {
+            throw new RuntimeException("Unauthorized role");
+        }
+
         existingTask = taskRepository.save(existingTask);
         logger.info("Task updated successfully with ID: {}", id);
+
         return TaskMapper.toTaskDTO(existingTask);
     }
 
@@ -126,4 +165,22 @@ public class TaskService {
         }
         logger.info("Partial updates applied to task with ID: {}", existingTask.getId());
     }
+
+    public TaskDTO assignTaskToUser(Long taskId, Long userId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        if (task.getTaskStatus() == TaskStatus.COMPLETED) {
+            throw new RuntimeException("Cannot assign a completed task.");
+        }
+
+        task.setAssignee(user);
+        Task updatedTask = taskRepository.save(task);
+
+        return TaskMapper.toTaskDTO(updatedTask);
+    }
+
 }

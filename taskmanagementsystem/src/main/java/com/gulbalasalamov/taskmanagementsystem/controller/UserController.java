@@ -1,5 +1,6 @@
 package com.gulbalasalamov.taskmanagementsystem.controller;
 
+import com.gulbalasalamov.taskmanagementsystem.model.dto.UserDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
 import com.gulbalasalamov.taskmanagementsystem.request.SignInAuthRequest;
 import com.gulbalasalamov.taskmanagementsystem.request.SignUpUserRequest;
@@ -21,10 +22,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAll();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
