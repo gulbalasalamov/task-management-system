@@ -1,8 +1,8 @@
 package com.gulbalasalamov.taskmanagementsystem.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.Priority;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.Status;
+import com.gulbalasalamov.taskmanagementsystem.model.enums.TaskPriority;
+import com.gulbalasalamov.taskmanagementsystem.model.enums.TaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -29,11 +29,11 @@ public class Task {
     private String title;
 
     @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private TaskPriority taskPriority;
 
     private String description;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private TaskStatus taskStatus;
     @CreationTimestamp
     private Date createdAt;
     @UpdateTimestamp

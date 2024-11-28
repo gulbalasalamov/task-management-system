@@ -28,8 +28,9 @@ public class Role implements GrantedAuthority {
 //    @ToString.Exclude
 //    private User user;
 
-    @OneToMany(mappedBy = "role",cascade = CascadeType.ALL)
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(name = "user_id",referencedColumnName ="id")
+    private User user;
 
 
     @Override
@@ -42,7 +43,6 @@ public class Role implements GrantedAuthority {
         return "Role{" +
                 "id=" + id +
                 ", roleType=" + roleType +
-                ", users=" + users +
                 '}';
     }
 }

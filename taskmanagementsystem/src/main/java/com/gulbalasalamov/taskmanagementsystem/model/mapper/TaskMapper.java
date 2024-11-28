@@ -1,12 +1,11 @@
 package com.gulbalasalamov.taskmanagementsystem.model.mapper;
 
-import com.gulbalasalamov.taskmanagementsystem.model.dto.CommentDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.dto.TaskDTO;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Comment;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.Task;
 import com.gulbalasalamov.taskmanagementsystem.model.entity.User;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.Priority;
-import com.gulbalasalamov.taskmanagementsystem.model.enums.Status;
+import com.gulbalasalamov.taskmanagementsystem.model.enums.TaskPriority;
+import com.gulbalasalamov.taskmanagementsystem.model.enums.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +22,10 @@ public class TaskMapper {
         taskDTO.setId(task.getId());
         taskDTO.setTitle(task.getTitle());
         taskDTO.setDescription(task.getDescription());
-        taskDTO.setStatus(task.getStatus().name());
+        taskDTO.setStatus(task.getTaskStatus().name());
         taskDTO.setCreatedAt(task.getCreatedAt());
         taskDTO.setUpdatedAt(task.getUpdatedAt());
-        taskDTO.setPriority(task.getPriority() != null ? task.getPriority().name() : null);
+        taskDTO.setPriority(task.getTaskPriority() != null ? task.getTaskPriority().name() : null);
 
         taskDTO.setAssigneeId(task.getAssignee() != null ? task.getAssignee().getId() : null);
 
@@ -49,12 +48,20 @@ public class TaskMapper {
         task.setId(taskDTO.getId());
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
-        task.setStatus(Status.valueOf(taskDTO.getStatus()));
         task.setCreatedAt(taskDTO.getCreatedAt());
         task.setUpdatedAt(taskDTO.getUpdatedAt());
 
+        if (taskDTO.getStatus() != null) {
+            try {
+                task.setTaskStatus(TaskStatus.valueOf(taskDTO.getStatus()));
+            } catch (IllegalArgumentException e) {
+                // TODO: For the wrong ENUM handle appropiately
+                throw new RuntimeException("Invalid status value: " + taskDTO.getStatus());
+            }
+        }
+
         if (taskDTO.getPriority() != null) {
-            task.setPriority(Priority.valueOf(taskDTO.getPriority()));
+            task.setTaskPriority(TaskPriority.valueOf(taskDTO.getPriority()));
         }
 
         // Assignee conversion

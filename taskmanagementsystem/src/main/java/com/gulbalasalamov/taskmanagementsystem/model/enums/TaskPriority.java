@@ -1,5 +1,5 @@
 package com.gulbalasalamov.taskmanagementsystem.model.enums;
 
-public enum Priority {
+public enum TaskPriority {
     HIGH,MEDIUM,LOW;
 }
