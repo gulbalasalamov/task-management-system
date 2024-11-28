@@ -24,10 +24,6 @@ public class Role implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 
-//    @OneToOne(mappedBy = "role")
-//    @ToString.Exclude
-//    private User user;
-
     @ManyToOne
     @JoinColumn(name = "user_id",referencedColumnName ="id")
     private User user;
