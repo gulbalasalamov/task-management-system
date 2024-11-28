@@ -46,9 +46,7 @@ public class UserService {
         try {
             String email = signInAuthRequest.getEmail();
             String password = signInAuthRequest.getPassword();
-
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new CustomJwtException("User not found", HttpStatus.BAD_REQUEST));
             String token = jwtTokenProvider.createToken(email, user.getRoles());
@@ -60,36 +58,22 @@ public class UserService {
 
     public SignUpUserResponse signUp(SignUpUserRequest signUpUserRequest) {
         User user = UserMapper.toUser(signUpUserRequest);
-
         if (userRepository.existsByUsername(signUpUserRequest.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists");
         }
         if (userRepository.existsByEmail(signUpUserRequest.getEmail())) {
             throw new UserAlreadyExistsException("Email already exists");
         }
-
         user.setPassword(passwordEncoder.encode(signUpUserRequest.getPassword()));
-
-        Role role;
         try {
-            role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase())).orElseThrow(() -> new RoleNotFoundException("Role not found"));
+            Role role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase()))
+                    .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+            role.setRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase()));
+            role.setUser(user);
+            user.setRoles(Collections.singletonList(role));
         } catch (IllegalArgumentException e) {
             throw new InvalidRoleTypeException("Invalid role type: " + signUpUserRequest.getRoleType());
         }
-
-//        Role role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase()))
-//                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
-        user.setRoles(Collections.singletonList(role));
-
-//        if (!userRepository.existsByUsername(user.getUsername())) {
-//            user.setPassword(passwordEncoder.encode(user.getPassword()));
-//            Role role = roleRepository.findByRoleType(RoleType.valueOf(signUpUserRequest.getRoleType().toUpperCase()))
-//                    .orElseThrow(() -> new RuntimeException("Role not found"));
-//            user.setRoles(Collections.singletonList(role));
-//        } else {
-//            throw new CustomJwtException("User already exists", HttpStatus.CONFLICT);
-//        }
-
         User savedUser = userRepository.save(user);
         return UserMapper.toUserResponse(savedUser);
     }

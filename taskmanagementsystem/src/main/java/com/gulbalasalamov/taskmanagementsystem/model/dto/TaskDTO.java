@@ -1,6 +1,5 @@
 package com.gulbalasalamov.taskmanagementsystem.model.dto;
 
-import com.gulbalasalamov.taskmanagementsystem.model.enums.Priority;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

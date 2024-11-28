@@ -1,9 +1,11 @@
 package com.gulbalasalamov.taskmanagementsystem.config;
 
+import com.gulbalasalamov.taskmanagementsystem.exception.CustomAccessDeniedException;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenFilter;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenFilterConfigurer;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.processing.Suppress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,8 +38,8 @@ public class WebSecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // no session will be created or used by Spring security
         //Entry points
         http.authorizeRequests(auth -> auth
-                .requestMatchers("/api/v1/user/signin").permitAll()
-                .requestMatchers("/api/v1/user/signup").permitAll()
+                .requestMatchers("/api/v1/user/**").permitAll()
+                .requestMatchers("/api/v1/task/**").hasRole("ADMIN")
                 .requestMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
                         "/configuration/security", "/swagger-ui.html", "/webjars/**",
                         "/swagger-ui/**", "/javainuse-openapi/**").permitAll()
