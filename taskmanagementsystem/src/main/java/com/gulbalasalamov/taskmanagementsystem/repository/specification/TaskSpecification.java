@@ -12,7 +12,7 @@ import java.util.List;
 public class TaskSpecification {
     public static Specification<Task> withFilters(String title,
                                                   TaskStatus taskStatus,
-                                                  TaskPriority priority,
+                                                  TaskPriority taskPriority,
                                                   Long authorId,
                                                   Long assigneeId) {
         return (root, query, criteriaBuilder) -> {
@@ -22,10 +22,10 @@ public class TaskSpecification {
                 predicates.add(criteriaBuilder.like(root.get("title"), "%" + title + "%"));
             }
             if (taskStatus != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), taskStatus));
+                predicates.add(criteriaBuilder.equal(root.get("taskStatus"), taskStatus));
             }
-            if (priority != null) {
-                predicates.add(criteriaBuilder.equal(root.get("priority"), priority));
+            if (taskPriority != null) {
+                predicates.add(criteriaBuilder.equal(root.get("taskPriority"), taskPriority));
             }
             if (authorId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("author").get("id"), authorId));
