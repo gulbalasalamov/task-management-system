@@ -1,4 +1,4 @@
-# Task Management System - Effective Mobile Jr. Java Developer Backend Challenge
+# Task Management System - Effective Mobile Java Developer Backend Challenge
 
 ## Functional Requirements
 
@@ -180,5 +180,5 @@ Swagger / OpenAPI : http://localhost:8080/swagger-ui/swagger-ui/index.html
 - **Java 17+**
 - **Spring Boot**
 - **PostgreSQL**
-- **Spring Security - JWT **
+- **Spring Security JWT**
 - **Docker**
