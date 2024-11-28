@@ -1,22 +1,15 @@
 package com.gulbalasalamov.taskmanagementsystem.config;
 
-import com.gulbalasalamov.taskmanagementsystem.exception.CustomAccessDeniedException;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenFilter;
-import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenFilterConfigurer;
 import com.gulbalasalamov.taskmanagementsystem.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.processing.Suppress;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,19 +32,15 @@ public class WebSecurityConfig {
         //Entry points
         http.authorizeRequests(auth -> auth
                 .requestMatchers("/api/v1/user/**").permitAll()
-                .requestMatchers("/api/v1/task/update/**").hasAnyRole("ADMIN","USER")
+                .requestMatchers("/api/v1/task/update/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/api/v1/task/all").hasRole("ADMIN")
                 .requestMatchers("/api/v1/task/assign/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/task/filter/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/comment/**").hasAnyRole("ADMIN","USER")
-//                .requestMatchers("/api/v1/comment/create").hasAnyRole("ADMIN","USER")
-//                .requestMatchers("/api/v1/comment/update").hasAnyRole("ADMIN","USER")
-//                .requestMatchers("/api/v1/comment/delete").hasAnyRole("ADMIN","USER")
-//                .requestMatchers("/api/v1/comment/task/**").hasAnyRole("ADMIN","USER")
-//                .requestMatchers("/api/v1/comment/user/**").hasAnyRole("ADMIN","USER")
-                .requestMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**",
-                        "/configuration/security", "/swagger-ui.html", "/webjars/**",
-                        "/swagger-ui/**", "/javainuse-openapi/**").permitAll()
+                .requestMatchers("/api/v1/comment/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+//                .requestMatchers("/v3/api-docs", "/configuration/ui", "/swagger-resources/**",
+//                        "/configuration/security", "/swagger-ui.html", "/webjars/**","/index.html",
+//                        "/swagger-ui/**", "/javainuse-openapi/**").permitAll()
                 .anyRequest()
                 .authenticated()); // authenticate means no role is important. login enough
 
@@ -60,7 +49,6 @@ public class WebSecurityConfig {
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
