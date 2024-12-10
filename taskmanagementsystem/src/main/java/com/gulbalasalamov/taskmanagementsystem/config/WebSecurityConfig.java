@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration for the web application.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -24,12 +27,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Configures the security filter chain
+     *
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(AbstractHttpConfigurer::disable); // prevent others accessing your tokens and make requests by using links
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // no session will be created or used by Spring security
-        //Entry points
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        //Configure entry points
         http.authorizeRequests(auth -> auth
                 .requestMatchers("/api/v1/user/**").permitAll()
                 .requestMatchers("/api/v1/task/update/**").hasAnyRole("ADMIN", "USER")
@@ -38,23 +49,31 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/task/filter/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/comment/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-//                .requestMatchers("/v3/api-docs", "/configuration/ui", "/swagger-resources/**",
-//                        "/configuration/security", "/swagger-ui.html", "/webjars/**","/index.html",
-//                        "/swagger-ui/**", "/javainuse-openapi/**").permitAll()
                 .anyRequest()
-                .authenticated()); // authenticate means no role is important. login enough
+                .authenticated());
 
-        //Apply jwt token auth filter
+        //Apply JWT token auth filter
         http.addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /**
+     * Provides a password encoder bean
+     * @return the PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
+    /**
+     * Provides an authentication manager bean
+     *
+     * @param authenticationConfiguration
+     * @return the AuthenticationManager
+     * @throws Exception if an error occurs during authentication manager creation
+     */
     @Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

@@ -16,11 +16,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *  Service for managing comments.
+ */
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -29,6 +33,18 @@ public class CommentService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Adds a comment to a task.
+     *
+     * @param taskId the ID of the task
+     * @param userId the ID of the user adding the comment
+     * @param commentDTO the comment data
+     * @param userDetails the user details of the user performing the operation
+     * @return the added comment
+     * @throws TaskNotFoundException if the task is not found
+     * @throws RuntimeException if the user is not found
+     * @throws AccessDeniedException if the user does not have permission to comment on the task */
+    @Transactional
     public CommentDTO addComment(Long taskId, Long userId, CommentDTO commentDTO, UserDetails userDetails) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -46,7 +62,16 @@ public class CommentService {
             throw new AccessDeniedException("You do not have permission to comment on this task.");
         }
     }
-
+    /**
+     * Updates a comment.
+     *
+     * @param commentId the ID of the comment
+     * @param commentDTO the comment data
+     * @param userDetails the user details of the user performing the operation
+     * @return the updated comment
+     * @throws CommentNotFoundException if the comment is not found
+     * @throws AccessDeniedException if the user does not have permission to update the comment */
+    @Transactional
     public CommentDTO updateComment(Long commentId, CommentDTO commentDTO, UserDetails userDetails) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + commentId));
         boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
@@ -63,6 +88,14 @@ public class CommentService {
         }
     }
 
+    /**
+     * Deletes a comment.
+     *
+     * @param commentId the ID of the comment
+     * @param userDetails the user details of the user performing the operation
+     * @throws CommentNotFoundException if the comment is not found
+     * @throws AccessDeniedException if the user does not have permission to delete the comment */
+    @Transactional
     public void deleteComment(Long commentId, UserDetails userDetails) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + commentId));
         boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
@@ -76,11 +109,21 @@ public class CommentService {
         }
     }
 
+    /**
+     * Retrieves comments by task ID.
+     * @param taskId the ID of the task
+     * @return the list of comments */
+    @Transactional(readOnly = true)
     public List<CommentDTO> getCommentsByTask(Long taskId) {
         List<Comment> comments = commentRepository.findByTaskId(taskId);
         return comments.stream().map(CommentMapper::toCommentDTO).collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves comments by user ID.
+     * @param userId the ID of the user
+     * @return the list of comments */
+    @Transactional(readOnly = true)
     public List<CommentDTO> getCommentsByUser(Long userId) {
         List<Comment> comments = commentRepository.findByUserId(userId);
         return comments.stream().map(CommentMapper::toCommentDTO).collect(Collectors.toList());
