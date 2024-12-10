@@ -24,11 +24,15 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing users
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -39,11 +43,22 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * Retrieves all users from the database
+     * @return List of all users.
+     */
+    @Transactional(readOnly = true)
     public List<UserDTO> getAll() {
         List<User> users = userRepository.findAll();
         return users.stream().map(UserMapper::toUserDTO).collect(Collectors.toList());
     }
 
+    /**
+     * Authenticates a user and provides a JWT token.
+     * @param signInAuthRequest the sign-in request containing email and password
+     * @return the response containing the JWT token.
+     */
+    @Transactional
     public SignInAuthResponse signIn(SignInAuthRequest signInAuthRequest) {
 
         try {
@@ -59,6 +74,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Registers a new user in the system.
+     * @param signUpUserRequest the sign-up request containing user details.
+     * @return the response containing the registered user details
+     */
+    @Transactional
     public SignUpUserResponse signUp(SignUpUserRequest signUpUserRequest) {
         User user = UserMapper.toUser(signUpUserRequest);
         if (userRepository.existsByUsername(signUpUserRequest.getUsername())) {
